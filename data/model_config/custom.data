@@ -1,0 +1,5 @@
+classes=1
+train=data\model_config\train.txt
+valid=data\model_config\valid.txt
+names=data\model_config\classes.txt
+boxes=.\data\labelled_images
