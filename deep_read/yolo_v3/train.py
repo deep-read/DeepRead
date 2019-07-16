@@ -1,6 +1,8 @@
 
 import os
 import sys
+if os.name == 'nt':
+    sys.path.append(os.getcwd())
 import time
 import datetime
 import argparse
@@ -13,34 +15,34 @@ from torchvision import transforms
 from torch.autograd import Variable
 import torch.optim as optim
 
-from cv_training_stack.object_detection.yolo_v3.models import Darknet
-from cv_training_stack.object_detection.yolo_v3.utils.logger import *
-from cv_training_stack.object_detection.yolo_v3.utils.utils import (
+from deep_read.yolo_v3.models import Darknet
+from deep_read.yolo_v3.utils.logger import *
+from deep_read.yolo_v3.utils.utils import (
     load_classes,
     weights_init_normal,
 )
-from cv_training_stack.object_detection.yolo_v3.utils.datasets import (
+from deep_read.yolo_v3.utils.datasets import (
     ListDataset
 )
-from cv_training_stack.object_detection.yolo_v3.utils.parse_config import (
+from deep_read.yolo_v3.utils.parse_config import (
     parse_data_config
 )
-from cv_training_stack.object_detection.yolo_v3.test import evaluate
+from deep_read.yolo_v3.test import evaluate
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=int, default=100, help='number of epochs')
-    parser.add_argument('--batch_size', type=int, default=8, help='size of each image batch')
-    parser.add_argument('--gradient_accumulations', type=int, default=2, help='number of gradient accums before step')
-    parser.add_argument('--model_def', type=str, help='path to model definition file')
-    parser.add_argument('--data_config', type=str, help='path to data config file')
-    parser.add_argument('--pretrained_weights', type=str, help='if specified starts from checkpoint model')
-    parser.add_argument('--n_cpu', type=int, default=8, help='number of cpu threads to use during batch generation')
-    parser.add_argument('--img_size', type=int, default=416, help='size of each image dimension')
-    parser.add_argument('--evaluation_interval', type=int, default=1, help='interval evaluations on validation set')
-    parser.add_argument('--compute_map', default=False, help='if True computes mAP every tenth batch')
-    parser.add_argument('--multiscale_training', default=True, help='allow for multi-scale training')
+    parser.add_argument('--batch-size', type=int, default=8, help='size of each image batch')
+    parser.add_argument('--gradient-accumulations', type=int, default=2, help='number of gradient accums before step')
+    parser.add_argument('--model-def', type=str, help='path to model definition file')
+    parser.add_argument('--data-config', type=str, help='path to data config file')
+    parser.add_argument('--pretrained-weights', type=str, help='if specified starts from checkpoint model')
+    parser.add_argument('--n-cpu', type=int, default=8, help='number of cpu threads to use during batch generation')
+    parser.add_argument('--img-size', type=int, default=416, help='size of each image dimension')
+    parser.add_argument('--evaluation-interval', type=int, default=1, help='interval evaluations on validation set')
+    parser.add_argument('--compute-map', default=False, help='if True computes mAP every tenth batch')
+    parser.add_argument('--multiscale-training', default=True, help='allow for multi-scale training')
     opt = parser.parse_args()
     print(opt)
 
@@ -155,31 +157,32 @@ if __name__ == '__main__':
 
             model.seen += imgs.size(0)
 
-        # if epoch % opt.evaluation_interval == 0:
-        #     print('\n---- Evaluating Model ----')
-        #     # Evaluate the model on the validation set
-        #     precision, recall, AP, f1, ap_class = evaluate(
-        #         model,
-        #         path=valid_path,
-        #         iou_thres=0.5,
-        #         conf_thres=0.5,
-        #         nms_thres=0.5,
-        #         img_size=opt.img_size,
-        #         batch_size=8,
-        #     )
-        #     evaluation_metrics = [
-        #         ('val_precision', precision.mean()),
-        #         ('val_recall', recall.mean()),
-        #         ('val_mAP', AP.mean()),
-        #         ('val_f1', f1.mean()),
-        #     ]
-        #     # logger.list_of_scalars_summary(evaluation_metrics, epoch)
-        #
-        #     # Print class APs and mAP
-        #     ap_table = [['Index', 'Class name', 'AP']]
-        #     for i, c in enumerate(ap_class):
-        #         ap_table += [[c, class_names[c], '%.5f' % AP[i]]]
-        #     print(AsciiTable(ap_table).table)
-        #     print(f'---- mAP {AP.mean()}')
+        if epoch % opt.evaluation_interval == 0:
+            print('\n---- Evaluating Model ----')
+            # Evaluate the model on the validation set
+            precision, recall, AP, f1, ap_class = evaluate(
+                model,
+                path=valid_path,
+                labels_path=labels_path,
+                iou_thres=0.2,
+                conf_thres=0.5,
+                nms_thres=0.2,
+                img_size=opt.img_size,
+                batch_size=8,
+            )
+            evaluation_metrics = [
+                ('val_precision', precision.mean()),
+                ('val_recall', recall.mean()),
+                ('val_mAP', AP.mean()),
+                ('val_f1', f1.mean()),
+            ]
+            # logger.list_of_scalars_summary(evaluation_metrics, epoch)
 
-    # model.save_darknet_weights('smart_new_homes.weights')
+            # Print class APs and mAP
+            ap_table = [['Index', 'Class name', 'AP']]
+            for i, c in enumerate(ap_class):
+                ap_table += [[c, class_names[c], '%.5f' % AP[i]]]
+            print(AsciiTable(ap_table).table)
+            print(f'---- mAP {AP.mean()}')
+
+    model.save_darknet_weights('deep_read.weights')

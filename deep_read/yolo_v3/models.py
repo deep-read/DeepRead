@@ -4,8 +4,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from cv_training_stack.object_detection.yolo_v3.utils.parse_config import *
-from cv_training_stack.object_detection.yolo_v3.utils.utils import (
+from deep_read.yolo_v3.utils.parse_config import *
+from deep_read.yolo_v3.utils.utils import (
     build_targets,
     to_cpu,
 )
