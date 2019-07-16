@@ -1,8 +1,11 @@
 """ Creates a custom YOLO model """
 
 import argparse
-
-from cv_training_stack.object_detection.yolo_v3.config.models import model_schemas
+import os
+if os.name == 'nt':
+    import sys
+    sys.path.append(os.getcwd())
+from deep_read.yolo_v3.config.models import model_schemas
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
