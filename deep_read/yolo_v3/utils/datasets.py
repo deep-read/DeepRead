@@ -10,7 +10,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 
-from cv_training_stack.object_detection.yolo_v3.utils.augmentations import horisontal_flip
+from deep_read.yolo_v3.utils.augmentations import horisontal_flip
 
 
 def pad_to_square(img, pad_value):
