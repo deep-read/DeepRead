@@ -6,6 +6,12 @@ name = "pypi"
 [packages]
 google-images-download = "*"
 pip = "==18.0.0"
+numpy = "*"
+terminaltables = "*"
+pillow = "*"
+tqdm = "*"
+torch = {file = "https://download.pytorch.org/whl/cu90/torch-1.1.0-cp37-cp37m-win_amd64.whl"}
+torchvision = {file = "https://download.pytorch.org/whl/cu90/torchvision-0.3.0-cp37-cp37m-win_amd64.whl"}
 
 [dev-packages]
 
